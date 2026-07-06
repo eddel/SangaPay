@@ -2,7 +2,7 @@
 
 ## Product Goal
 
-SangaPay is a mobile-first remittance PWA for African users who fund an XAF wallet and send value to Europe through SEPA Instant or to crypto wallets as USDC. The frontend must communicate speed, security, fee transparency, and delivery certainty.
+SangaPay is a mobile-first remittance PWA for African users who fund one XAF wallet and send value to Europe through SEPA Instant or to crypto wallets as USDC. EUR and USDC values are live conversion equivalents of the XAF balance, not independently funded wallets or stored balances. The frontend must communicate speed, security, fee transparency, and delivery certainty.
 
 The first release is an investor-ready, fully interactive frontend. Financial operations, identity checks, exchange-rate updates, biometric authentication, notifications, and admin actions use realistic deterministic mock services. No production backend, custody integration, payment processor, blockchain integration, or KYC vendor is included.
 
@@ -16,7 +16,7 @@ The approved direction is **Emerald Vault**, based on [the selected dashboard re
 - Transaction and action accent: emerald `#10B981`.
 - Typography: Inter, with tabular numerals for money values.
 - Shape language: 24px primary surfaces, 16-20px controls, restrained borders, minimal elevation.
-- Visual hierarchy: navy app header, emerald wallet surface, horizontally scrollable currency pockets, compact action bar, rate strip, grouped transaction list, fixed native-style tab bar.
+- Visual hierarchy: navy app header, emerald XAF wallet surface, horizontally scrollable equivalent-value cards, compact action bar, rate strip, grouped transaction list, fixed native-style tab bar.
 - Icons: Lucide React icons. Country and currency marks use accessible text or licensed/package assets rather than improvised drawings.
 - Motion: short Framer Motion transitions, balance reveals, progress changes, success confirmation, and reduced-motion fallbacks.
 
@@ -27,7 +27,7 @@ The dashboard reference defines the visual system, not a literal requirement to 
 The app uses an app-like route hierarchy with persistent bottom navigation for primary customer areas.
 
 - Entry: splash, onboarding, sign up, login, OTP, biometric prompt.
-- Home: balances, currency pockets, quick actions, live rate, recent transactions.
+- Home: the XAF wallet balance, read-only EUR and USDC equivalents, quick actions, live rate, and recent transactions.
 - Send EUR: amount, recipient, review, processing, success receipt.
 - Send crypto: amount and asset, network, address, review, processing, success receipt.
 - Rates: converter, XAF/EUR and XAF/USDC quotes, time-range chart.
@@ -42,7 +42,7 @@ Admin is reachable through a clearly labeled demo-role switch in Profile. This a
 
 All visible controls are functional. Navigation, onboarding pagination, forms, filters, toggles, drawers, dialogs, charts, install prompt, receipt generation, and demo admin actions have client-side behavior.
 
-Form flows preserve entered values when navigating backward. Amount screens calculate from mock live rates and show fees before confirmation. Invalid IBANs, unsupported wallet addresses, insufficient balance, expired OTP codes, offline submission, and simulated transfer failures receive explicit inline feedback and recovery actions.
+Form flows preserve entered values when navigating backward. Amount screens calculate from mock live rates and show fees before confirmation. Every transfer debits the single XAF wallet; selecting EUR or USDC chooses the destination rail and conversion preview rather than another source wallet. Invalid IBANs, unsupported wallet addresses, insufficient balance, expired OTP codes, offline submission, and simulated transfer failures receive explicit inline feedback and recovery actions.
 
 Success screens use generated transaction identifiers and expose receipt viewing, receipt download, sharing when Web Share is available, and a fallback copy action.
 
@@ -66,7 +66,7 @@ Server Components provide static shells where useful. Interactive screens and fl
 
 The data layer exposes typed repository interfaces so mock implementations can later be replaced by APIs without rewriting screens.
 
-- Wallet: XAF, EUR-equivalent, USDC-equivalent, visibility preference.
+- Wallet: one stored XAF amount and a visibility preference. EUR and USDC equivalents are derived from the current rate snapshot and explicitly labeled as estimates.
 - Quote: source amount, destination amount, rate, fee, expiry, delivery estimate.
 - Transfer: rail, recipient, destination, network when applicable, status timeline, receipt fields.
 - Transaction: debit or credit, display amount, XAF equivalent, timestamp, counterparty, status.
@@ -115,4 +115,3 @@ Each data-bearing screen includes an intentional skeleton state, a populated sta
 9. Offline behavior, accessibility, responsive polish, and final verification.
 
 Every milestone ends with automated checks and a runnable preview. Work pauses for approval before the next milestone begins.
-
