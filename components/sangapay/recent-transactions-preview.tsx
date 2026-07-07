@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { ChevronRight, Download } from "lucide-react";
+
 type Transaction = {
   id: string;
   title: string;
@@ -16,34 +19,50 @@ export function RecentTransactionsPreview({
   return (
     <section
       aria-label="Recent transactions"
-      className="mt-8 rounded-[30px] bg-white px-4 pb-4 pt-1 shadow-[var(--shadow-card)]"
+      className="mt-7 bg-transparent px-2 pb-4"
     >
       <div className="flex items-center justify-between">
-        <h2 className="text-[2rem] font-semibold tracking-[-0.05em] text-slate-950">
+        <h2 className="text-[1.35rem] font-semibold tracking-[-0.05em] text-slate-950">
           Recent transactions
         </h2>
+        <Link href="/app/history" className="text-base font-semibold text-emerald-600">
+          View all
+        </Link>
       </div>
-      <div className="mt-4 space-y-3">
+      <div className="mt-4">
         {transactions.map((transaction) => (
           <article
             key={transaction.id}
-            className="rounded-[22px] border-b border-slate-100 px-2 py-4 last:border-b-0"
+            className="border-b border-slate-200/80 py-3.5 last:border-b-0"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex min-w-0 items-start gap-3">
-                <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-xl font-semibold text-emerald-600">
-                  {transaction.title
-                    .split(" ")
-                    .slice(0, 2)
-                    .map((part) => part[0])
-                    .join("")}
+                <div
+                  className={`flex size-14 shrink-0 items-center justify-center rounded-full text-xl font-semibold ${
+                    transaction.title === "Binance Wallet"
+                      ? "bg-slate-950 text-amber-400"
+                      : "bg-emerald-50 text-emerald-600"
+                  }`}
+                >
+                  {transaction.title === "Wallet top up" ? (
+                    <Download className="size-7" />
+                  ) : transaction.title === "Binance Wallet" ? (
+                    "B"
+                  ) : (
+                    transaction.title
+                      .split(" ")
+                      .slice(0, 2)
+                      .map((part) => part[0])
+                      .join("")
+                  )}
                 </div>
                 <div>
-                  <p className="text-[1.1rem] font-semibold tracking-[-0.03em] text-slate-950">
+                  <p className="whitespace-nowrap text-[1rem] font-semibold tracking-[-0.04em] text-slate-950">
                     {transaction.title}
                   </p>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {transaction.subtitle} -{" "}
+                  <p className="mt-1.5 text-sm font-medium text-slate-500">
+                    {transaction.subtitle}{" "}
+                    <span className="text-emerald-600">-</span>{" "}
                     <span
                       className={
                         transaction.statusTone === "success"
@@ -56,11 +75,20 @@ export function RecentTransactionsPreview({
                   </p>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-[1.1rem] font-semibold tracking-[-0.03em] text-slate-950">
-                  {transaction.amountLabel}
-                </p>
-                <p className="mt-1 text-sm text-slate-500">{transaction.meta}</p>
+              <div className="flex items-center gap-2 text-right">
+                <div className="min-w-[108px]">
+                  <p
+                    className={`whitespace-nowrap text-[0.95rem] font-semibold tracking-[-0.04em] ${
+                      transaction.amountLabel.startsWith("+")
+                        ? "text-emerald-600"
+                        : "text-slate-950"
+                    }`}
+                  >
+                    {transaction.amountLabel}
+                  </p>
+                  <p className="mt-1.5 text-sm font-medium text-slate-500">{transaction.meta}</p>
+                </div>
+                <ChevronRight className="size-5 shrink-0 text-slate-500" />
               </div>
             </div>
           </article>

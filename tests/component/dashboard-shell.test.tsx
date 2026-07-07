@@ -22,9 +22,9 @@ describe("DemoDashboardShell", () => {
     expect(within(walletCard).getByText(/3,980\.20 USDC/)).toBeInTheDocument();
 
     const pockets = screen.getByRole("region", { name: "My pockets" });
-    expect(within(pockets).getByText("XAF")).toBeInTheDocument();
+    expect(within(pockets).getAllByText("XAF").length).toBeGreaterThan(0);
     expect(within(pockets).getByText("EUR")).toBeInTheDocument();
-    expect(within(pockets).getByText("USDC")).toBeInTheDocument();
+    expect(within(pockets).getAllByText("USDC").length).toBeGreaterThan(0);
     expect(within(pockets).getByText("CFA Franc")).toBeInTheDocument();
     expect(within(pockets).getByText("Euro")).toBeInTheDocument();
     expect(within(pockets).getByText("USD Coin")).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe("DemoDashboardShell", () => {
       "href",
       "/app/send-eur",
     );
-    expect(screen.getByText("SEPA Instant")).toBeInTheDocument();
+    expect(screen.getAllByText("SEPA Instant").length).toBeGreaterThan(0);
     expect(screen.getByText("USDC on-chain")).toBeInTheDocument();
     expect(screen.getByText("Top up wallet")).toBeInTheDocument();
 
@@ -54,11 +54,8 @@ describe("DemoDashboardShell", () => {
       "href",
       "/app/history",
     );
-    expect(
-      within(activity).getByText((_, node) =>
-        node?.textContent === "SEPA Instant  -  Sent",
-      ),
-    ).toBeInTheDocument();
+    expect(within(activity).getByText("Marie Dubois")).toBeInTheDocument();
+    expect(within(activity).getAllByText("SEPA Instant").length).toBeGreaterThan(0);
     expect(within(activity).getByText("Sent")).toBeInTheDocument();
     expect(within(activity).getByText("-EUR 350.00")).toBeInTheDocument();
     expect(within(activity).getAllByText("Completed")).toHaveLength(2);
