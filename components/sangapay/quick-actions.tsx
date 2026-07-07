@@ -16,7 +16,7 @@ export function QuickActions() {
   return (
     <section
       aria-label="Quick actions"
-      className="mt-4 rounded-[24px] border border-slate-200 bg-white px-2 py-2.5 shadow-[0_12px_28px_rgba(15,23,42,0.06)]"
+      className="mt-4 rounded-[20px] border border-slate-200 bg-white px-0 py-3 shadow-[0_10px_24px_rgba(15,23,42,0.05)]"
     >
       <div className="grid grid-cols-3 divide-x divide-slate-200">
         {actions.map((action) => {
@@ -27,15 +27,15 @@ export function QuickActions() {
               key={action.label}
               aria-label={action.label}
               href={action.href}
-              className="px-2 py-0.5 text-center"
+              className="px-2 text-center"
             >
-              <span className="mx-auto flex size-11 items-center justify-center rounded-full bg-emerald-600 text-white shadow-[0_10px_18px_rgba(16,185,129,0.22)]">
-                <Icon className="size-5" />
+              <span className="mx-auto flex size-9 items-center justify-center rounded-full bg-emerald-600 text-white shadow-[0_8px_16px_rgba(16,185,129,0.2)]">
+                <Icon className="size-[18px]" />
               </span>
-              <span className="mt-2 block whitespace-nowrap text-[0.9rem] font-semibold tracking-[-0.04em] text-slate-950">
+              <span className="mt-2 block whitespace-nowrap text-sm font-semibold leading-tight text-slate-950">
                 {action.label}
               </span>
-              <span className="mt-1 block text-xs font-medium text-slate-500">
+              <span className="mt-0.5 block whitespace-nowrap text-xs font-normal leading-tight text-slate-500">
                 {action.subtitle}
               </span>
             </Link>

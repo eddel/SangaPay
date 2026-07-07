@@ -3,7 +3,6 @@
 import { AppShell } from "@/components/sangapay/app-shell";
 import { BalanceCard } from "@/components/sangapay/balance-card";
 import { BottomNav } from "@/components/sangapay/bottom-nav";
-import { EquivalentCardRow } from "@/components/sangapay/equivalent-card-row";
 import { LiveRateCard } from "@/components/sangapay/live-rate-card";
 import { QuickActions } from "@/components/sangapay/quick-actions";
 import { RecentTransactionsPreview } from "@/components/sangapay/recent-transactions-preview";
@@ -17,7 +16,7 @@ export function DemoDashboardShell() {
         <TopBar firstName={demoSession.user.firstName} />
       </div>
 
-      <div className="-mt-24">
+      <div className="-mt-20">
         <BalanceCard
           sourceMinor={demoSession.wallet.sourceMinor}
           walletLabel={demoSession.wallet.label}
@@ -26,10 +25,6 @@ export function DemoDashboardShell() {
       </div>
 
       <div>
-        <EquivalentCardRow
-          sourceMinor={demoSession.wallet.sourceMinor}
-          items={demoSession.wallet.equivalents}
-        />
         <QuickActions />
         <LiveRateCard
           eurLabel={demoSession.rates.eur}

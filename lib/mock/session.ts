@@ -4,7 +4,7 @@ const walletMinor = 245000000;
 
 export const demoSession = {
   user: {
-    firstName: "Alain",
+    firstName: "Jaja",
   },
   wallet: {
     sourceCurrency: "XAF" as const,
@@ -39,7 +39,7 @@ export const demoSession = {
     {
       id: "txn_10411",
       title: "Wallet top up",
-      subtitle: "Mobile Money",
+      subtitle: "Momo",
       meta: "Yesterday, 10:42",
       amountLabel: "+1,000,000 XAF",
       status: "Completed",

@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, Clock3, House, UserRound } from "lucide-react";
+import { Clock3, House, UserRound } from "lucide-react";
 
 const items = [
   { key: "home", label: "Home", icon: House, href: "/app" },
-  { key: "rates", label: "Rates", icon: BarChart3, href: "/app/rates" },
   { key: "history", label: "History", icon: Clock3, href: "/app/history" },
   { key: "profile", label: "Profile", icon: UserRound, href: "/app/profile" },
 ];
@@ -34,15 +33,15 @@ export function BottomNav({ activeTab }: { activeTab?: BottomNavTab }) {
   return (
     <nav
       aria-label="Primary navigation"
-      className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-[430px] items-center justify-between border-t border-slate-200 bg-white/95 px-8 pb-[calc(12px+env(safe-area-inset-bottom))] pt-5 backdrop-blur-xl"
+      className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-[430px] items-center justify-around border-t border-slate-200 bg-white/95 px-8 pb-[calc(6px+env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl"
     >
       {items.map((item) => {
         const Icon = item.icon;
         const isActive = item.key === currentTab;
-        const itemClass = "flex flex-col items-center gap-1.5 text-[12px] font-medium";
+        const itemClass = "flex flex-col items-center gap-0.5 text-[10px] font-medium";
         const iconClass = isActive
-          ? "flex size-10 items-center justify-center rounded-full text-emerald-600"
-          : "flex size-10 items-center justify-center rounded-full text-slate-950";
+          ? "flex size-7 items-center justify-center rounded-full text-emerald-600"
+          : "flex size-7 items-center justify-center rounded-full text-slate-950";
         const labelClass = isActive ? "text-emerald-600" : "text-slate-950";
 
         return (
@@ -53,10 +52,10 @@ export function BottomNav({ activeTab }: { activeTab?: BottomNavTab }) {
             className={`${itemClass} relative`}
           >
             {isActive ? (
-              <span className="absolute -top-5 h-1 w-11 rounded-full bg-emerald-500" />
+              <span className="absolute -top-2 h-0.5 w-8 rounded-full bg-emerald-500" />
             ) : null}
             <span className={iconClass}>
-              <Icon className="size-7" />
+              <Icon className="size-5" />
             </span>
             <span className={labelClass}>{item.label}</span>
           </Link>
