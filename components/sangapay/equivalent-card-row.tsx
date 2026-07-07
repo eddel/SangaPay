@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { CurrencyCode } from "@/lib/money/convert";
 import { formatMoney } from "@/lib/money/format";
 
@@ -17,53 +18,74 @@ export function EquivalentCardRow({
   const pocketCards = [
     {
       code: "XAF" as const,
-      tag: "Main wallet",
+      icon: "🇨🇲",
       name: "CFA Franc",
-      amount: `${(sourceMinor / 100).toLocaleString("en-US")} XAF`,
+      amount: (sourceMinor / 100).toLocaleString("en-US"),
+      suffix: "XAF",
       accent: "border-emerald-500 bg-white",
-      amountClass:
-        "mt-10 text-[2rem] font-semibold tracking-[-0.05em] text-slate-950",
     },
     ...items.map((item) => ({
       code: item.destinationCurrency,
-      tag: "Equivalent view",
+      icon: item.destinationCurrency === "EUR" ? "🇪🇺" : "$",
       name: item.destinationCurrency === "EUR" ? "Euro" : "USD Coin",
-      amount: formatMoney(item.destinationCurrency, item.destinationMinor),
+      amount:
+        item.destinationCurrency === "EUR"
+          ? formatMoney(item.destinationCurrency, item.destinationMinor)
+          : (item.destinationMinor / 100).toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }),
+      suffix: item.destinationCurrency === "EUR" ? "" : "USDC",
       accent: "border-slate-200 bg-slate-50/70",
-      amountClass:
-        "mt-10 text-[1.6rem] font-medium tracking-[-0.03em] text-slate-700",
     })),
   ];
 
   return (
     <section aria-label="My pockets" className="mt-7">
-      <div className="mb-4">
-        <h2 className="text-[2rem] font-semibold tracking-[-0.05em] text-slate-950">
+      <div className="mb-4 flex items-center justify-between px-2">
+        <h2 className="text-[1.35rem] font-semibold tracking-[-0.05em] text-slate-950">
           My pockets
         </h2>
+        <Link href="/app/profile" className="text-base font-semibold text-emerald-600">
+          Manage
+        </Link>
       </div>
-      <div className="overflow-x-auto pb-1">
-        <div className="flex gap-4">
+      <div className="-mx-4 overflow-x-auto px-4 pb-1">
+        <div className="flex gap-3">
           {pocketCards.map((item) => (
             <article
               key={item.code}
-              className={`min-w-[168px] rounded-[28px] border p-5 shadow-[var(--shadow-card)] ${item.accent}`}
+              className={`min-h-[128px] min-w-[118px] rounded-[24px] border p-4 shadow-[0_12px_28px_rgba(15,23,42,0.06)] ${item.accent}`}
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
-                {item.tag}
+              <div className="flex items-center gap-3">
+                <span
+                  className={`flex size-10 items-center justify-center rounded-full text-lg shadow-sm ${
+                    item.code === "USDC"
+                      ? "bg-blue-500 text-white"
+                      : "bg-white text-slate-950"
+                  }`}
+                >
+                  {item.icon}
+                </span>
+                <div>
+                  <p className="text-base font-semibold tracking-[-0.04em] text-slate-950">
+                    {item.code}
+                  </p>
+                  <p className="text-sm text-slate-500">{item.name}</p>
+                </div>
+              </div>
+              <p className="mt-8 text-[1.32rem] font-semibold tracking-[-0.05em] text-slate-950">
+                {item.amount}
               </p>
-              <p className="mt-3 text-[2rem] font-semibold tracking-[-0.05em] text-slate-950">
-                {item.code}
-              </p>
-              <p className="mt-1 text-base text-slate-500">{item.name}</p>
-              <p className={item.amountClass}>{item.amount}</p>
+              {item.suffix ? <p className="mt-1 text-base text-slate-500">{item.suffix}</p> : null}
             </article>
           ))}
+          <article
+            aria-hidden="true"
+            className="min-h-[128px] min-w-[56px] rounded-[24px] border border-slate-200 bg-slate-50"
+          />
         </div>
       </div>
-      <p className="mt-3 text-sm text-slate-500">
-        Equivalent views only - no separate funded wallets
-      </p>
     </section>
   );
 }

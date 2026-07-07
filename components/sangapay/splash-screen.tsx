@@ -29,10 +29,10 @@ export function SplashScreen() {
             SangaPay
           </p>
           <h1 className="mt-4 text-4xl font-semibold tracking-[-0.04em] text-slate-950">
-            Send Across Borders Instantly.
+            Send XAF Across Borders.
           </h1>
           <p className="mx-auto mt-4 max-w-[18rem] text-sm leading-6 text-slate-500">
-            Premium remittance for African users moving money into Europe and
+            Premium remittance for African users moving Cameroon XAF into Europe and via
             global crypto rails.
           </p>
         </motion.div>
@@ -48,7 +48,7 @@ export function SplashScreen() {
           href="/onboarding"
           className="flex h-14 items-center justify-center gap-2 rounded-full bg-[var(--color-ink)] text-sm font-semibold text-white"
         >
-          Continue
+          Get Started
           <ArrowRight className="size-4" />
         </Link>
         <Link

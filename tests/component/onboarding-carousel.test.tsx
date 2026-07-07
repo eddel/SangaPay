@@ -22,7 +22,14 @@ describe("OnboardingCarousel", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Log in" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Next slide" }));
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    expect(continueButton).toHaveClass("bg-[var(--color-emerald)]");
+    expect(continueButton.querySelector("svg")).toBeInTheDocument();
+
+    const onboardingCard = screen.getByLabelText("Onboarding slide");
+    expect(onboardingCard).toHaveClass("bg-[var(--color-emerald)]");
+
+    fireEvent.click(continueButton);
 
     expect(screen.getByText("Crypto transfers.")).toBeInTheDocument();
     expect(
@@ -38,7 +45,7 @@ describe("OnboardingCarousel", () => {
     ).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Log in" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Next slide" }));
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
 
     expect(screen.getByText("Competitive exchange rates.")).toBeInTheDocument();
     expect(
@@ -50,7 +57,7 @@ describe("OnboardingCarousel", () => {
     expect(screen.queryByText("Fees")).not.toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Slide 3 of 3");
     expect(
-      screen.queryByRole("button", { name: "Next slide" }),
+      screen.queryByRole("button", { name: "Continue" }),
     ).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Create account" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Log in" })).toBeInTheDocument();

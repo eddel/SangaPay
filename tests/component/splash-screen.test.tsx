@@ -8,7 +8,7 @@ describe("SplashScreen", () => {
 
     expect(screen.getByText("SangaPay")).toBeInTheDocument();
     expect(
-      screen.getByText("Send Across Borders Instantly."),
+      screen.getByText("Send XAF Across Borders."),
     ).toBeInTheDocument();
   });
 });

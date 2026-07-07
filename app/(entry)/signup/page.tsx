@@ -42,7 +42,7 @@ export default function SignUpPage() {
       <AuthHeader
         badge="Create your vault"
         title="Create your account."
-        description="Enter your details and we'll send a one-time code next."
+        description="Enter your details, we'll send an OTP."
       />
 
       <AuthCard
@@ -71,7 +71,7 @@ export default function SignUpPage() {
               aria-invalid={Boolean(errors.fullName)}
               aria-describedby={errors.fullName ? "signup-full-name-error" : undefined}
               className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-950 outline-none transition focus:border-emerald-400"
-              placeholder="Nadine Mvondo"
+              placeholder="Jaja Mvondo"
             />
             <FieldError id="signup-full-name-error" message={errors.fullName} />
           </label>
@@ -90,7 +90,7 @@ export default function SignUpPage() {
               aria-invalid={Boolean(errors.phone)}
               aria-describedby={errors.phone ? "signup-phone-error" : undefined}
               className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-950 outline-none transition focus:border-emerald-400"
-              placeholder="+237 670 000 000"
+              placeholder="+233 670 000 000"
               inputMode="tel"
             />
             <FieldError id="signup-phone-error" message={errors.phone} />
@@ -108,7 +108,7 @@ export default function SignUpPage() {
               value={values.email}
               onChange={(event) => updateValue("email", event.target.value)}
               className="mt-2 h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-950 outline-none transition focus:border-emerald-400"
-              placeholder="nadine@sangapay.demo"
+              placeholder="jaja@sangapay.com"
               inputMode="email"
             />
           </label>

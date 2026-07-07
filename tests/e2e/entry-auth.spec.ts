@@ -9,7 +9,11 @@ test("entry auth flow handles invalid otp before reaching biometric setup", asyn
     page.getByRole("heading", { name: "Send Across Borders Instantly." }),
   ).toBeVisible();
 
-  await page.getByRole("link", { name: "I already have an account" }).click();
+  await expect(page.getByRole("link", { name: "I already have an account" })).toHaveAttribute(
+    "href",
+    "/login",
+  );
+  await page.goto("/login");
 
   await expect(
     page.getByRole("heading", { name: "Log in with your phone." }),
