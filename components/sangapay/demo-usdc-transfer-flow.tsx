@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import {
   ArrowLeft,
   BadgeCheck,
-  Banknote,
   Check,
   Clock3,
   Copy,
@@ -13,6 +12,7 @@ import {
   SendHorizontal,
   Share2,
   ShieldCheck,
+  Wallet2,
 } from "lucide-react";
 import { AppShell } from "@/components/sangapay/app-shell";
 import { BottomNav } from "@/components/sangapay/bottom-nav";
@@ -20,35 +20,63 @@ import { RouteLoadingSkeleton } from "@/components/sangapay/route-loading-skelet
 import { useSimulatedLoading } from "@/components/sangapay/use-simulated-loading";
 import { copyTextToClipboard, shareReceipt } from "@/lib/native-actions";
 
-type Step = "amount" | "recipient" | "review" | "sending" | "receipt";
+type Step = "amount" | "wallet" | "review" | "sending" | "receipt";
+type Network = "Base" | "Polygon" | "Solana";
 
-const EUR_RATE_XAF = 655.96;
-const EUR_TOTAL_FEE_RATE = 0.008;
+const USDC_RATE_XAF = 615.55;
+const NETWORK_FEE_XAF: Record<Network, number> = {
+  Base: 900,
+  Polygon: 1200,
+  Solana: 700,
+};
 const WALLET_XAF = 2450000;
+const NETWORK_NOTE: Record<Network, string> = {
+  Base: "Low fee routing for EVM wallets and exchanges.",
+  Polygon: "Balanced speed and cost for broad exchange support.",
+  Solana: "Fast USDC payout for Solana-compatible wallets.",
+};
 
 function formatXaf(value: number) {
   return `${Math.round(value).toLocaleString("en-US")} XAF`;
 }
 
-function formatEur(value: number) {
-  return `EUR ${value.toLocaleString("en-US", {
+function formatUsdc(value: number) {
+  return `${value.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })}`;
+  })} USDC`;
 }
 
-function normalizeIban(value: string) {
-  return value.replace(/\s+/g, "").toUpperCase();
+function maskAddress(value: string) {
+  if (value.length <= 10) {
+    return value;
+  }
+
+  return `${value.slice(0, 6)}...${value.slice(-4)}`;
 }
 
-function formatIban(value: string) {
-  return normalizeIban(value).replace(/(.{4})/g, "$1 ").trim();
+function validateWalletAddress(network: Network, address: string) {
+  const trimmed = address.trim();
+
+  if (!trimmed) {
+    return "Enter a wallet address.";
+  }
+
+  if (network === "Solana") {
+    return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(trimmed)
+      ? ""
+      : "Enter a valid Solana wallet address.";
+  }
+
+  return /^0x[a-fA-F0-9]{40}$/.test(trimmed)
+    ? ""
+    : `Enter a valid ${network} wallet address.`;
 }
 
 function StepPill({ activeStep }: { activeStep: Step }) {
   const steps = [
     { key: "amount", label: "Amount" },
-    { key: "recipient", label: "Recipient" },
+    { key: "wallet", label: "Wallet" },
     { key: "review", label: "Review" },
   ] as const;
   const activeIndex = steps.findIndex((step) => step.key === activeStep);
@@ -95,35 +123,35 @@ function DetailRow({
   );
 }
 
-export function DemoEurTransferFlow() {
+export function DemoUsdcTransferFlow() {
   const isLoading = useSimulatedLoading();
   const [step, setStep] = useState<Step>("amount");
   const [amountXaf, setAmountXaf] = useState(150000);
-  const [recipientName, setRecipientName] = useState("");
-  const [iban, setIban] = useState("");
-  const [note, setNote] = useState("");
-  const [ibanError, setIbanError] = useState("");
+  const [network, setNetwork] = useState<Network>("Base");
+  const [walletAddress, setWalletAddress] = useState("");
+  const [destinationLabel, setDestinationLabel] = useState("");
+  const [addressError, setAddressError] = useState("");
   const [copyLabel, setCopyLabel] = useState("Copy ID");
 
-  const receiveEur = useMemo(() => amountXaf / EUR_RATE_XAF, [amountXaf]);
-  const feeXaf = Math.round(amountXaf * EUR_TOTAL_FEE_RATE);
+  const feeXaf = NETWORK_FEE_XAF[network];
+  const receiveUsdc = useMemo(() => amountXaf / USDC_RATE_XAF, [amountXaf]);
   const totalDebit = amountXaf + feeXaf;
   const remainingBalance = WALLET_XAF - totalDebit;
-  const reference = "SGP-EUR-4872";
+  const reference = "SGP-USDC-5831";
 
-  function continueToRecipient() {
-    setStep("recipient");
+  function continueToWallet() {
+    setStep("wallet");
   }
 
   function reviewTransfer() {
-    const compactIban = normalizeIban(iban);
+    const validationError = validateWalletAddress(network, walletAddress);
 
-    if (compactIban.length < 15) {
-      setIbanError("Enter a valid IBAN with at least 15 characters.");
+    if (validationError) {
+      setAddressError(validationError);
       return;
     }
 
-    setIbanError("");
+    setAddressError("");
     setStep("review");
   }
 
@@ -140,13 +168,13 @@ export function DemoEurTransferFlow() {
 
   async function handleShareReceipt() {
     await shareReceipt({
-      title: "SangaPay EUR transfer receipt",
-      text: `Transaction ID: ${reference}\nRecipient: ${recipientName}\nPaid out: ${formatEur(receiveEur)}\nDebit: ${formatXaf(totalDebit)}\nStatus: Completed`,
+      title: "SangaPay USDC transfer receipt",
+      text: `Transaction ID: ${reference}\nNetwork: ${network}\nWallet: ${maskAddress(walletAddress)}\nPaid out: ${formatUsdc(receiveUsdc)}\nDebit: ${formatXaf(totalDebit)}\nStatus: Completed`,
     });
   }
 
   if (isLoading) {
-    return <RouteLoadingSkeleton title="Loading EUR transfer" caption="Preparing EUR transfer flow" />;
+    return <RouteLoadingSkeleton title="Loading crypto transfer" caption="Preparing USDC transfer flow" />;
   }
 
   return (
@@ -161,22 +189,22 @@ export function DemoEurTransferFlow() {
             <ArrowLeft className="size-5" />
           </Link>
           <div className="rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm font-medium text-white/88">
-            SEPA Instant
+            USDC on-chain
           </div>
         </div>
         <div className="mt-9">
-          <p className="text-sm font-medium text-emerald-300">XAF to EUR</p>
+          <p className="text-sm font-medium text-emerald-300">XAF to USDC</p>
           <h1 className="mt-2 text-[2.45rem] font-semibold leading-none tracking-[-0.06em]">
-            {step === "recipient"
-              ? "Recipient details"
+            {step === "wallet"
+              ? "Wallet details"
               : step === "review"
                 ? "Review transfer"
                 : step === "receipt"
                   ? "Transfer sent"
-                  : "Send EUR"}
+                  : "Send USDC"}
           </h1>
           <p className="mt-3 text-sm leading-6 text-white/70">
-            Convert from your XAF wallet and deliver to a European bank account.
+            Convert from your XAF wallet and deliver USDC to an exchange or external wallet.
           </p>
         </div>
         <StepPill activeStep={step} />
@@ -200,85 +228,111 @@ export function DemoEurTransferFlow() {
             />
             <span className="pb-1 text-base font-semibold text-slate-500">XAF</span>
           </div>
+
+          <div className="mt-5">
+            <p className="text-sm font-semibold text-slate-600">Network</p>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {(["Base", "Polygon", "Solana"] as Network[]).map((item) => {
+                const isActive = item === network;
+
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setNetwork(item)}
+                    aria-pressed={isActive}
+                    className={`min-h-12 rounded-[20px] border px-3 text-sm font-semibold transition ${
+                      isActive
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-700"
+                        : "border-slate-200 bg-white text-slate-700"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-3 text-sm text-slate-500">{NETWORK_NOTE[network]}</p>
+          </div>
+
           <div className="mt-5 rounded-[28px] bg-emerald-50 px-5 py-5">
-            <p className="text-sm font-medium text-slate-500">EUR recipient gets</p>
+            <p className="text-sm font-medium text-slate-500">USDC recipient gets</p>
             <p className="mt-2 text-[2rem] font-semibold tracking-[-0.06em] text-emerald-700">
-              {formatEur(receiveEur)}
+              {formatUsdc(receiveUsdc)}
             </p>
-            <p className="mt-2 text-sm text-slate-600">1 EUR = 655.96 XAF</p>
+            <p className="mt-2 text-sm text-slate-600">1 USDC = 615.55 XAF</p>
           </div>
           <div className="mt-4 rounded-[26px] border border-slate-200 px-5">
             <DetailRow label="Wallet balance" value={formatXaf(WALLET_XAF)} />
-            <DetailRow label="Fee" value={formatXaf(feeXaf)} />
+            <DetailRow label="Network fee" value={formatXaf(feeXaf)} />
             <DetailRow label="Total debit" value={formatXaf(totalDebit)} />
-            <DetailRow label="Delivery" value="SEPA Instant" tone="success" />
+            <DetailRow label="Network" value={network} tone="success" />
           </div>
           <button
             type="button"
-            onClick={continueToRecipient}
+            onClick={continueToWallet}
             className="mt-5 flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-5 text-base font-semibold text-white shadow-[var(--shadow-card)]"
           >
-            Continue to recipient
+            Continue to wallet
             <SendHorizontal className="size-5" />
           </button>
         </section>
       ) : null}
 
-      {step === "recipient" ? (
+      {step === "wallet" ? (
         <section className="-mt-5 rounded-[32px] border border-slate-200 bg-white p-5 shadow-[var(--shadow-card)]">
           <div className="flex items-center gap-3">
             <span className="flex size-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-              <Banknote className="size-5" />
+              <Wallet2 className="size-5" />
             </span>
             <div>
-              <p className="font-semibold tracking-[-0.03em] text-slate-950">
-                European bank account
-              </p>
-              <p className="text-sm text-slate-500">SEPA Instant compatible recipient</p>
+              <p className="font-semibold tracking-[-0.03em] text-slate-950">USDC wallet</p>
+              <p className="text-sm text-slate-500">{network} network destination</p>
             </div>
           </div>
           <div className="mt-6 space-y-4">
             <label className="block">
-              <span className="text-sm font-semibold text-slate-600">Recipient full name</span>
+              <span className="text-sm font-semibold text-slate-600">Wallet address</span>
               <input
-                aria-label="Recipient full name"
-                value={recipientName}
-                onChange={(event) => setRecipientName(event.target.value)}
-                className="mt-2 min-h-14 w-full rounded-[22px] border border-slate-200 bg-slate-50 px-4 text-base font-medium text-slate-950 outline-none focus:border-emerald-400"
-                placeholder="Marie Dubois"
-              />
-            </label>
-            <label className="block">
-              <span className="text-sm font-semibold text-slate-600">IBAN</span>
-              <input
-                aria-label="IBAN"
-                value={iban}
+                aria-label="Wallet address"
+                value={walletAddress}
                 onChange={(event) => {
-                  setIban(event.target.value.toUpperCase());
-                  setIbanError("");
+                  setWalletAddress(event.target.value.trim());
+                  setAddressError("");
                 }}
-                className="mt-2 min-h-14 w-full rounded-[22px] border border-slate-200 bg-slate-50 px-4 text-base font-medium uppercase tracking-[0.04em] text-slate-950 outline-none focus:border-emerald-400"
-                placeholder="FR14 2004 1010 0505 0001 3M02 606"
+                className="mt-2 min-h-14 w-full rounded-[22px] border border-slate-200 bg-slate-50 px-4 text-base font-medium text-slate-950 outline-none focus:border-emerald-400"
+                placeholder={
+                  network === "Solana"
+                    ? "7xKXtg2CWb7xY3L4B6A9i6aV2mC7rJv8sUqP5nHd4QzE"
+                    : "0x4Cbe58c50480..."
+                }
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
               />
-              {ibanError ? (
-                <p className="mt-2 text-sm font-medium text-red-600">{ibanError}</p>
-              ) : null}
+              {addressError ? (
+                <p className="mt-2 text-sm font-medium text-red-600">{addressError}</p>
+              ) : (
+                <p className="mt-2 text-sm text-slate-500">
+                  Match the address format to the selected network before sending.
+                </p>
+              )}
             </label>
             <label className="block">
-              <span className="text-sm font-semibold text-slate-600">Transfer note</span>
+              <span className="text-sm font-semibold text-slate-600">Destination label</span>
               <input
-                aria-label="Transfer note"
-                value={note}
-                onChange={(event) => setNote(event.target.value)}
+                aria-label="Destination label"
+                value={destinationLabel}
+                onChange={(event) => setDestinationLabel(event.target.value)}
                 className="mt-2 min-h-14 w-full rounded-[22px] border border-slate-200 bg-slate-50 px-4 text-base font-medium text-slate-950 outline-none focus:border-emerald-400"
-                placeholder="Family support"
+                placeholder="Binance wallet"
               />
             </label>
           </div>
           <button
             type="button"
             onClick={reviewTransfer}
-            disabled={!recipientName.trim() || !iban.trim()}
+            disabled={!walletAddress.trim()}
             className="mt-6 flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-5 text-base font-semibold text-white shadow-[var(--shadow-card)] disabled:bg-slate-300"
           >
             Review transfer
@@ -295,22 +349,22 @@ export function DemoEurTransferFlow() {
           <div className="rounded-[28px] bg-slate-950 px-5 py-5 text-white">
             <p className="text-sm text-white/64">Recipient gets</p>
             <p className="mt-2 text-[2.35rem] font-semibold leading-none tracking-[-0.06em]">
-              {formatEur(receiveEur)}
+              {formatUsdc(receiveUsdc)}
             </p>
-            <p className="mt-3 text-sm text-emerald-300">Arrives in seconds via SEPA Instant</p>
+            <p className="mt-3 text-sm text-emerald-300">Expected on-chain confirmation in under a minute</p>
           </div>
           <div className="mt-4 rounded-[26px] border border-slate-200 px-5">
-            <DetailRow label="Recipient" value={recipientName} />
-            <DetailRow label="IBAN" value={formatIban(iban)} />
+            <DetailRow label="Network" value={network} />
+            <DetailRow label="Wallet" value={maskAddress(walletAddress)} />
+            <DetailRow label="Destination" value={destinationLabel || "External wallet"} />
             <DetailRow label="You send" value={formatXaf(amountXaf)} />
-            <DetailRow label="Fee" value={formatXaf(feeXaf)} />
+            <DetailRow label="Network fee" value={formatXaf(feeXaf)} />
             <DetailRow label="Total debit" value={formatXaf(totalDebit)} />
             <DetailRow label="Remaining balance" value={formatXaf(remainingBalance)} />
-            <DetailRow label="Note" value={note || "SangaPay transfer"} />
           </div>
           <div className="mt-5 flex items-center gap-3 rounded-[24px] bg-emerald-50 px-4 py-4 text-sm text-emerald-800">
             <ShieldCheck className="size-5 shrink-0" />
-            <p>Protected by OTP confirmation, device checks, and bank-grade monitoring.</p>
+            <p>Transfers are protected by address checks, OTP confirmation, and network routing controls.</p>
           </div>
           <button
             type="button"
@@ -334,7 +388,7 @@ export function DemoEurTransferFlow() {
           <p className="mt-5 text-xl font-semibold tracking-[-0.04em] text-slate-950">
             Sending transfer
           </p>
-          <p className="mt-2 text-sm text-slate-500">Locking rate and submitting to SEPA.</p>
+          <p className="mt-2 text-sm text-slate-500">Broadcasting your USDC payout to the selected network.</p>
         </section>
       ) : null}
 
@@ -347,12 +401,13 @@ export function DemoEurTransferFlow() {
             <h2 className="mt-5 text-[2.25rem] font-semibold leading-none tracking-[-0.06em]">
               Transfer sent
             </h2>
-            <p className="mt-3 text-sm text-white/86">Arrives in seconds via SEPA Instant</p>
+            <p className="mt-3 text-sm text-white/86">USDC is on the way to the recipient wallet</p>
           </div>
           <div className="mt-4 rounded-[26px] border border-slate-200 px-5">
             <DetailRow label="Transaction ID" value={reference} />
-            <DetailRow label="Recipient" value={recipientName} />
-            <DetailRow label="Paid out" value={formatEur(receiveEur)} />
+            <DetailRow label="Network" value={network} />
+            <DetailRow label="Wallet" value={maskAddress(walletAddress)} />
+            <DetailRow label="Paid out" value={formatUsdc(receiveUsdc)} />
             <DetailRow label="Debit" value={formatXaf(totalDebit)} />
             <DetailRow label="Status" value="Completed" tone="success" />
           </div>
@@ -376,7 +431,7 @@ export function DemoEurTransferFlow() {
           </div>
           <div className="mt-5 flex items-center gap-3 rounded-[24px] bg-slate-50 px-4 py-4 text-sm text-slate-600">
             <Clock3 className="size-5 shrink-0 text-emerald-600" />
-            <p>We will keep the transfer status synced in your transaction history.</p>
+            <p>We will keep network status synced in your transaction history.</p>
           </div>
         </section>
       ) : null}

@@ -46,7 +46,7 @@ export function BalanceCard({
           </button>
         </div>
         <p className="mt-2.5 flex items-end gap-1.5 text-[2.25rem] font-bold leading-none text-white">
-          <span>{isBalanceVisible ? xafLabel : "*,***,***"}</span>
+          <span>{isBalanceVisible ? xafLabel : "*********"}</span>
           <span className="pb-0.5 text-[1.2rem] font-bold">XAF</span>
         </p>
       </div>

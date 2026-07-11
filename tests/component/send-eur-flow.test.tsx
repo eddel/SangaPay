@@ -1,8 +1,19 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import SendEurPage from "@/app/(app)/app/send-eur/page";
 import { DemoEurTransferFlow } from "@/components/sangapay/demo-eur-transfer-flow";
+import { copyTextToClipboard, shareReceipt } from "@/lib/native-actions";
+
+vi.mock("@/lib/native-actions", () => ({
+  copyTextToClipboard: vi.fn().mockResolvedValue(true),
+  shareReceipt: vi.fn().mockResolvedValue("shared"),
+}));
+
+beforeEach(() => {
+  vi.mocked(copyTextToClipboard).mockClear();
+  vi.mocked(shareReceipt).mockClear();
+});
 
 describe("DemoEurTransferFlow", () => {
   it("starts on an amount conversion screen with wallet, rate, fee, and delivery details", () => {
@@ -14,7 +25,7 @@ describe("DemoEurTransferFlow", () => {
     expect(screen.getByText("EUR 228.67")).toBeInTheDocument();
     expect(screen.getByText("1 EUR = 655.96 XAF")).toBeInTheDocument();
     expect(screen.getByText("Fee")).toBeInTheDocument();
-    expect(screen.getByText("1,500 XAF")).toBeInTheDocument();
+    expect(screen.getByText("1,200 XAF")).toBeInTheDocument();
     expect(screen.getAllByText("SEPA Instant")).toHaveLength(2);
     expect(screen.getByRole("button", { name: "Continue to recipient" })).toBeEnabled();
   });
@@ -52,7 +63,15 @@ describe("DemoEurTransferFlow", () => {
       await screen.findByRole("heading", { level: 1, name: "Transfer sent" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Arrives in seconds via SEPA Instant")).toBeInTheDocument();
+    expect(screen.getByText("Transaction ID")).toBeInTheDocument();
+    expect(screen.getByText("SGP-EUR-4872")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Share receipt" })).toBeEnabled();
+
+    await user.click(screen.getByRole("button", { name: "Copy ID" }));
+    expect(copyTextToClipboard).toHaveBeenCalledWith("SGP-EUR-4872");
+
+    await user.click(screen.getByRole("button", { name: "Share receipt" }));
+    expect(shareReceipt).toHaveBeenCalled();
   });
 });
 

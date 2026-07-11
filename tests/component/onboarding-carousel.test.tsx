@@ -27,7 +27,7 @@ describe("OnboardingCarousel", () => {
     expect(continueButton.querySelector("svg")).toBeInTheDocument();
 
     const onboardingCard = screen.getByLabelText("Onboarding slide");
-    expect(onboardingCard).toHaveClass("bg-[var(--color-emerald)]");
+    expect(onboardingCard).toHaveClass("bg-[var(--color-emerald-deep)]");
 
     fireEvent.click(continueButton);
 

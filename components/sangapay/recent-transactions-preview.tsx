@@ -8,7 +8,7 @@ type Transaction = {
   meta: string;
   amountLabel: string;
   status: string;
-  statusTone: "success" | "pending";
+  statusTone: "success" | "pending" | "failed";
 };
 
 export function RecentTransactionsPreview({
@@ -31,9 +31,10 @@ export function RecentTransactionsPreview({
       </div>
       <div className="mt-4">
         {transactions.map((transaction) => (
-          <article
+          <Link
             key={transaction.id}
-            className="border-b border-slate-200/80 py-3.5 last:border-b-0"
+            href={`/app/history/${transaction.id}`}
+            className="block border-b border-slate-200/80 py-3.5 last:border-b-0"
           >
             <div className="flex items-start justify-between gap-4">
               <div className="flex min-w-0 items-start gap-3">
@@ -67,6 +68,8 @@ export function RecentTransactionsPreview({
                       className={
                         transaction.statusTone === "success"
                           ? "font-medium text-emerald-600"
+                          : transaction.statusTone === "failed"
+                            ? "font-medium text-rose-600"
                           : "font-medium text-amber-600"
                       }
                     >
@@ -91,7 +94,7 @@ export function RecentTransactionsPreview({
                 <ChevronRight className="size-5 shrink-0 text-slate-500" />
               </div>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </section>

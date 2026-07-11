@@ -16,7 +16,7 @@ beforeEach(() => {
 });
 
 describe("BottomNav", () => {
-  it("renders the three primary tabs as real links and marks home active on the dashboard route", () => {
+  it("renders the four primary tabs as real links and marks home active on the dashboard route", () => {
     render(<BottomNav />);
 
     expect(
@@ -32,7 +32,10 @@ describe("BottomNav", () => {
       "page",
     );
 
-    expect(screen.queryByRole("link", { name: "Rates" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Rates" })).toHaveAttribute(
+      "href",
+      "/app/rates",
+    );
     expect(screen.getByRole("link", { name: "History" })).toHaveAttribute(
       "href",
       "/app/history",

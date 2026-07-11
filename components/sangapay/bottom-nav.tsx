@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Clock3, House, UserRound } from "lucide-react";
+import { BarChart3, Clock3, House, UserRound } from "lucide-react";
 
 const items = [
   { key: "home", label: "Home", icon: House, href: "/app" },
+  { key: "rates", label: "Rates", icon: BarChart3, href: "/app/rates" },
   { key: "history", label: "History", icon: Clock3, href: "/app/history" },
   { key: "profile", label: "Profile", icon: UserRound, href: "/app/profile" },
-];
+] as const;
 
 export type BottomNavTab = (typeof items)[number]["key"];
 
@@ -33,7 +34,7 @@ export function BottomNav({ activeTab }: { activeTab?: BottomNavTab }) {
   return (
     <nav
       aria-label="Primary navigation"
-      className="fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-[430px] items-center justify-around border-t border-slate-200 bg-white/95 px-8 pb-[calc(6px+env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl"
+      className="bottom-nav fixed inset-x-0 bottom-0 mx-auto flex w-full max-w-[430px] items-center justify-around border-t border-slate-200 bg-white/95 px-8 pb-[calc(6px+env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl"
     >
       {items.map((item) => {
         const Icon = item.icon;

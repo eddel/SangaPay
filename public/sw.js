@@ -1,6 +1,6 @@
 const CACHE_NAME = "sangapay-shell-v1";
 const OFFLINE_URL = "/offline";
-const SHELL_ASSETS = ["/", OFFLINE_URL, "/manifest.webmanifest"];
+const SHELL_ASSETS = ["/", "/app", OFFLINE_URL, "/manifest.webmanifest", "/icons/icon-192.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -28,14 +28,29 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    fetch(event.request).catch(async () => {
-      const cached = await caches.match(event.request);
+    caches.match(event.request).then((cached) => {
+      const networkFetch = fetch(event.request)
+        .then(async (response) => {
+          if (response && response.status === 200 && event.request.url.startsWith(self.location.origin)) {
+            const cache = await caches.open(CACHE_NAME);
+            cache.put(event.request, response.clone());
+          }
 
-      if (cached) {
-        return cached;
-      }
+          return response;
+        })
+        .catch(async () => {
+          if (cached) {
+            return cached;
+          }
 
-      return caches.match(OFFLINE_URL);
+          if (event.request.mode === "navigate") {
+            return caches.match(OFFLINE_URL);
+          }
+
+          return new Response("Offline", { status: 503, statusText: "Offline" });
+        });
+
+      return cached || networkFetch;
     }),
   );
 });

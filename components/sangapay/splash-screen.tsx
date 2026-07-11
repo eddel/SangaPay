@@ -46,7 +46,7 @@ export function SplashScreen() {
       >
         <Link
           href="/onboarding"
-          className="flex h-14 items-center justify-center gap-2 rounded-full bg-[var(--color-ink)] text-sm font-semibold text-white"
+          className="flex h-14 items-center justify-center gap-2 rounded-full bg-[var(--color-emerald)] text-sm font-semibold text-white"
         >
           Get Started
           <ArrowRight className="size-4" />

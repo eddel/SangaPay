@@ -8,13 +8,17 @@ describe("app home route", () => {
     render(await AppHomePage());
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Good morning, Alain" }),
+      screen.getByRole("heading", { level: 1, name: "Good morning, Jaja" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2, name: "Live rate" })).toBeInTheDocument();
     expect(screen.getByText("Updated 12 sec ago")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Home" })).toHaveAttribute(
       "aria-current",
       "page",
+    );
+    expect(screen.getByRole("link", { name: "Rates" })).toHaveAttribute(
+      "href",
+      "/app/rates",
     );
   });
 

@@ -12,6 +12,25 @@
   --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
+:root[data-theme="dark"] {
+  --color-app: #020617;
+  --color-surface: #0f172a;
+  --color-surface-muted: #111827;
+  --color-ink: #f8fafc;
+  --color-ink-soft: #cbd5e1;
+  --color-ring: rgba(148, 163, 184, 0.16);
+  --shadow-card: 0 10px 30px rgba(2, 6, 23, 0.45);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
 @theme inline {
   --font-sans: var(--font-inter);
 }
@@ -26,6 +45,12 @@ html {
     linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
 }
 
+html[data-theme="dark"] {
+  background:
+    radial-gradient(circle at top, rgba(16, 185, 129, 0.1), transparent 36%),
+    linear-gradient(180deg, #020617 0%, #06111f 100%);
+}
+
 body {
   min-height: 100vh;
   background: transparent;
@@ -33,9 +58,108 @@ body {
   font-family: var(--font-inter), sans-serif;
 }
 
+:root[data-theme="dark"] body {
+  color: #f8fafc;
+}
+
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+[role="button"] {
+  transition:
+    transform 140ms ease,
+    filter 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease;
+}
+
+button:hover,
+a:hover,
+[role="button"]:hover {
+  filter: brightness(0.985);
+}
+
+button:active,
+a:active,
+[role="button"]:active {
+  transform: scale(0.985);
+  filter: brightness(0.95);
+}
+
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid rgba(16, 185, 129, 0.35);
+  outline-offset: 2px;
+}
+
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(226, 232, 240, 0.9) 20%,
+    rgba(241, 245, 249, 1) 50%,
+    rgba(226, 232, 240, 0.9) 80%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+}
+
+:root[data-theme="dark"] .bg-white {
+  background-color: #0f172a !important;
+}
+
+:root[data-theme="dark"] .bg-slate-50,
+:root[data-theme="dark"] .bg-slate-100 {
+  background-color: #111827 !important;
+}
+
+:root[data-theme="dark"] .text-slate-950 {
+  color: #f8fafc !important;
+}
+
+:root[data-theme="dark"] .text-slate-700,
+:root[data-theme="dark"] .text-slate-600,
+:root[data-theme="dark"] .text-slate-500,
+:root[data-theme="dark"] .text-slate-400 {
+  color: #cbd5e1 !important;
+}
+
+:root[data-theme="dark"] .border-slate-200,
+:root[data-theme="dark"] .border-slate-100 {
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+:root[data-theme="dark"] .shadow-\[var\(--shadow-card\)\] {
+  box-shadow: var(--shadow-card) !important;
+}
+
+:root[data-theme="dark"] .bottom-nav {
+  background: rgba(5, 150, 105, 0.18) !important;
+  border-top-color: rgba(16, 185, 129, 0.24) !important;
+  backdrop-filter: blur(24px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .loading-shimmer {
+    animation: none !important;
+    background-position: 0 0 !important;
+  }
 }
 
 ::selection {
